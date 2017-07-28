@@ -1,0 +1,29 @@
+{
+  "name": "lazyload",
+  "version": "1.0.0",
+  "keywords": [
+    "lazyload",
+    "image",
+    "IntersectionObserver"
+  ],
+  "author": "nechehin",
+  "contributors": [],
+  "dependencies": {
+    "jquery": "^1.12.4"
+  },
+  "description": "Javascript plugin for lazyload images. Fork of https://github.com/tuupola/jquery_lazyload , but with IntersectionObserver mode support",
+  "main": "lazyload.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nechehin/lazyload.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nechehin/lazyload/issues"
+  },
+  "homepage": "https://github.com/nechehin/lazyload#readme"
+}
