@@ -1,18 +1,25 @@
 
 /*!
  * Plugin for lazy loading images
- * 
+ *
  * @link https://github.com/nechehin/lazyload
  */
 
 (function($, window) {
-    
+
     "use strict";
-    
-    var $window = $(window);
+
+    var $window = $(window),
+    winWidth = $window.width(),
+    winHeight = $window.height();
+
+    $window.on('resize', function(){
+      winWidth = $window.width(),
+      winHeight = $window.height();
+    });
 
     $.fn.lazyload = function(options) {
-        
+
         var elements = this,
             $container,
             settings = {
@@ -29,9 +36,9 @@
             placeholder     : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
             pageXOffset: false,
             pageYOffset: false
-        };        
-        
-        
+        };
+
+
         if (options) {
             /* Maintain BC for a couple of versions. */
             if (undefined !== options.failurelimit) {
@@ -46,28 +53,28 @@
             $.extend(settings, options);
         }
 
-        
-        var intersectionMode = settings.allowIntersectionMode 
+
+        var intersectionMode = settings.allowIntersectionMode
                 && 'IntersectionObserver' in window
                 && settings.event.indexOf('scroll') === 0;
 
 
         if (intersectionMode) {
-            
+
             var ioSetting = {};
-            
+
             if (settings.container !== window) {
                 ioSetting['root'] = typeof settings.container[0] === 'undefined' ? settings.container : settings.container[0];
             }
-            
+
             var io = new IntersectionObserver(function(entries){
-                
+
                 [].forEach.call(entries, function(entry){
-                    
+
                     if (typeof entry.isIntersecting !== 'undefined' && entry.isIntersecting === false) {
                         return;
                     }
-                    
+
                     var self = entry.target;
                     var tImg = new Image();
                     var src = self.getAttribute('data-' + settings.data_attribute);
@@ -78,30 +85,30 @@
                     };
 
                     tImg.src = src;
-                    
+
                     io.unobserve(self);
                 });
-                
+
             }, ioSetting);
-            
+
             if (typeof console.info === 'function') {
                 console.info('lazyload: intersection mode');
             }
-           
+
         } else {
-            
+
             /* Cache container as jQuery object. */
             $container = (settings.container === undefined ||
                       settings.container === window) ? $window : $(settings.container);
         }
-        
-        
+
+
         function update() {
-               
+
             settings.pageYOffset = window.pageYOffset;
             settings.pageXOffset = window.pageXOffset;
 
-            var counter = 0;                
+            var counter = 0;
 
             elements.each(function() {
 
@@ -125,9 +132,9 @@
                     }
                 }
             });
-                
+
         }
-        
+
 
         /* Fire one scroll event per scroll. Not one scroll event per image. */
         if (0 === settings.event.indexOf('scroll') && !intersectionMode) {
@@ -135,10 +142,10 @@
                 return update();
             });
         }
-        
+
 
         this.each(function() {
-            
+
             var self = this;
 
             self.loaded = false;
@@ -150,9 +157,9 @@
 
             /* When appear is triggered load original image. */
             if (!intersectionMode) {
-                
+
                 var $self = $(self);
-                
+
                 $self.one('appear', function() {
 
                     if (!this.loaded) {
@@ -192,7 +199,7 @@
                         tImg.src = self.getAttribute('data-' + settings.data_attribute);
                     }
                 });
-                
+
                 /* When wanted event is triggered load original image */
                 /* by triggering appear.                              */
                 if (settings.event.indexOf('scroll') !== 0) {
@@ -202,23 +209,23 @@
                         }
                     });
                 }
-                
+
             } else {
-                
+
                 io.observe(self);
-                
-            }            
-            
+
+            }
+
         });
 
 
         if (!intersectionMode) {
-            
+
             /* Check if something appears when window is resized. */
             window.addEventListener('resize', function() {
                 update();
             });
-            
+
             /* With IOS5 force loading images when navigating with back button. */
             /* Non optimal workaround. */
             if ((/(?:iphone|ipod|ipad).*os 5/gi).test(navigator.appVersion)) {
@@ -230,7 +237,7 @@
                     }
                 });
             }
-            
+
             /* Force initial check if images should appear. */
             $(function() {
                 update();
@@ -248,7 +255,7 @@
         var fold;
 
         if (settings.container === undefined || settings.container === window) {
-            fold = Tochka.winHeight() + settings.pageYOffset;
+            fold = winHeight + settings.pageYOffset;
         } else {
             fold = $(settings.container).offset().top + $(settings.container).height();
         }
@@ -260,7 +267,7 @@
         var fold;
 
         if (settings.container === undefined || settings.container === window) {
-            fold = Tochka.winWidth() + settings.pageXOffset;
+            fold = winWidth + settings.pageXOffset;
         } else {
             fold = $(settings.container).offset().left + $(settings.container).width();
         }
