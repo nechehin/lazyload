@@ -1,6 +1,6 @@
 {
-  "name": "lazyload",
-  "version": "1.0.0",
+  "name": "@nechehin/lazyload",
+  "version": "0.0.1",
   "keywords": [
     "lazyload",
     "image",
