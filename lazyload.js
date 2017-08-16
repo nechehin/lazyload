@@ -7,14 +7,9 @@
 
 (function (factory) {
 
-    if (typeof define === 'function' && define.amd) {
-        // AMD (Register as an anonymous module)
-        define(['jquery', window], factory);
-    } else if (typeof exports === 'object') {
-        // Node/CommonJS
-        module.exports = factory(require('jquery'), window);
+    if(typeof module === "object" && typeof module.exports === "object") {
+        factory(require("jquery"), window);
     } else {
-        // Browser globals
         factory(jQuery, window);
     }
 
