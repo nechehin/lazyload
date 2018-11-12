@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Lazyload - mixed</title>
+        <style>
+            img {
+                display: block;
+                width: 640px;
+                height: 480px;
+                margin-bottom: 30px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <img src="https://via.placeholder.com/640x480?text=No+lazy+image">
+
+        <img data-src="https://via.placeholder.com/640x480?text=Lazy+image" class="lazy">
+        <img data-src="https://via.placeholder.com/640x480/09f.png?text=Lazy+image" class="lazy">
+        <img data-src="https://via.placeholder.com/640x480/90f.png?text=Lazy+image" class="lazy">
+        <img data-src="https://via.placeholder.com/640x480/0f9.png?text=Lazy+image" class="lazy">
+        <img data-src="https://via.placeholder.com/640x480/f90.png?text=Lazy+image" class="lazy">
+
+        <iframe data-src="https://www.youtube.com/embed/9UkYhRXf5cg" class="lazy" width="560" height="315" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="./../lazyload.js"></script>
+        <script>
+            $('.lazy').lazyload();
+        </script>
+    </body>
+</html>

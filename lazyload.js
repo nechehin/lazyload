@@ -54,9 +54,7 @@
             threshold       : 0,
             failure_limit   : 0,
             event           : 'scroll',
-            effect          : 'show',
             container       : window,
-            data_attribute  : 'original',
             skip_invisible  : false,
             appear          : null,
             load            : null,
@@ -68,23 +66,38 @@
 
 
         if (options) {
-            /* Maintain BC for a couple of versions. */
-            if (undefined !== options.failurelimit) {
-                options.failure_limit = options.failurelimit;
-                delete options.failurelimit;
-            }
-            if (undefined !== options.effectspeed) {
-                options.effect_speed = options.effectspeed;
-                delete options.effectspeed;
-            }
-
             $.extend(settings, options);
         }
 
 
         var intersectionMode = settings.allowIntersectionMode
-                && 'IntersectionObserver' in window
-                && settings.event.indexOf('scroll') === 0;
+            && 'IntersectionObserver' in window
+            && settings.event.indexOf('scroll') === 0;
+
+
+        /**
+         * Set original source for lazy element
+         *
+         * @param {HTMLElement} lazyElement
+         */
+        function resolveLazyObject(lazyElement) {
+
+            var tagName = lazyElement.tagName.toLowerCase();
+            var src     = lazyElement.getAttribute('data-src');
+
+            if (tagName === 'img') {
+                lazyElement.src = src;
+                if (lazyElement.getAttribute('data-srcset')) {
+                    lazyElement.srcset = lazyElement.getAttribute('data-srcset');
+                }
+            }
+            else if (tagName === 'iframe') {
+                lazyElement.src = src;
+            }
+            else {
+                lazyElement.backgroundImage = 'url(' + src + ')';
+            }
+        }
 
 
         if (intersectionMode) {
@@ -99,29 +112,16 @@
 
                 [].forEach.call(entries, function(entry){
 
-                    if (typeof entry.isIntersecting !== 'undefined' && entry.isIntersecting === false) {
+                    if (entry.isIntersecting === false) {
                         return;
                     }
 
-                    var self = entry.target;
-                    var tImg = new Image();
-                    var src = self.getAttribute('data-' + settings.data_attribute);
+                    resolveLazyObject(entry.target);
 
-                    tImg.onload = function() {
-                        self.src = src;
-                        self.loaded = true;
-                    };
-
-                    tImg.src = src;
-
-                    io.unobserve(self);
+                    io.unobserve(entry.target);
                 });
 
             }, ioSetting);
-
-            if (typeof console.info === 'function') {
-                console.info('lazyload: intersection mode');
-            }
 
         } else {
 
@@ -197,34 +197,22 @@
                             settings.appear.call(self, elements_left, settings);
                         }
 
-                        var tImg = new Image();
+                        resolveLazyObject(self);
 
-                        tImg.onload = function() {
+                        self.loaded = true;
 
-                            var original = self.getAttribute('data-' + settings.data_attribute);
+                        /* Remove image from array so it is not looped next time. */
+                        var temp = $.grep(elements, function(element) {
+                            return !element.loaded;
+                        });
 
-                            if (self.tagName === 'IMG') {
-                                self.src = original;
-                            } else {
-                                self.style.backgroundImage = 'url(' + original + ')';
-                            }
+                        elements = $(temp);
 
-                            self.loaded = true;
+                        if (settings.load) {
+                            var elements_left = elements.length;
+                            settings.load.call(self, elements_left, settings);
+                        }
 
-                            /* Remove image from array so it is not looped next time. */
-                            var temp = $.grep(elements, function(element) {
-                                return !element.loaded;
-                            });
-
-                            elements = $(temp);
-
-                            if (settings.load) {
-                                var elements_left = elements.length;
-                                settings.load.call(self, elements_left, settings);
-                            }
-                        };
-
-                        tImg.src = self.getAttribute('data-' + settings.data_attribute);
                     }
                 });
 
@@ -260,7 +248,7 @@
                 $window.on('pageshow', function(event) {
                     if (event.originalEvent && event.originalEvent.persisted) {
                         elements.each(function() {
-                            $(this).trigger("appear");
+                            $(this).trigger('appear');
                         });
                     }
                 });
