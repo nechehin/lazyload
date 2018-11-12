@@ -49,5 +49,5 @@ jQuery(function() {
 then in your code do:
 
 ```js
-$("img.lazy").lazyload();
+$(".lazy").lazyload();
 ```
